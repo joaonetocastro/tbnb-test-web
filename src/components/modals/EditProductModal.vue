@@ -64,7 +64,7 @@
 </template>
 <script>
 import ProductService from "../../services/ProductService";
-import errorMessages from '../../utils/errorMessages';
+import errorMessages from "../../utils/errorMessages";
 export default {
   name: "EditProducModal",
   props: ["product", "afterEdit"],
@@ -80,6 +80,14 @@ export default {
   },
   methods: {
     async save() {
+      if (!this.product.barcode) {
+        this.setError(errorMessages.product.EMPTY_BARCODE);
+        return;
+      }
+      if (!this.product.name) {
+        this.setError(errorMessages.product.EMPTY_NAME);
+        return;
+      }
       this.sendingData = true;
       await ProductService.save(this.product)
         .then(() => {
@@ -90,14 +98,17 @@ export default {
           }, 800);
         })
         .catch(err => {
-          this.errorMessage = errorMessages.product[err.response.data.error];
-          this.status = "fail";
+          this.setError(errorMessages.product[err.response.data.error]);
         })
         .finally(() => (this.sendingData = false));
     },
     close() {
       this.open = false;
       this.status = null;
+    },
+    setError(error) {
+      this.errorMessage = error;
+      this.status = "fail";
     }
   },
   computed: {

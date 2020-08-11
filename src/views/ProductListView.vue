@@ -1,6 +1,9 @@
 <template>
 <v-container fluid>
   <v-layout column class="root">
+    <!-- <v-row> -->
+      <div class="tableActions d-flex flex-column flex-sm-row align-sm-center align-start justify-space-between">
+      <v-btn color="blue dark-1" @click="createProduct()">Adicionar produto</v-btn>
   <v-text-field
   class="queryInput"
         v-model="query"
@@ -10,6 +13,8 @@
         hide-details
             solo
       ></v-text-field>
+      </div>
+    <!-- </v-row> -->
   <v-data-table
     :headers="headers"
     :items="products"
@@ -19,7 +24,7 @@
     multi-sort
     class="elevation-1"
     loading:="loadingData"
-    loading-text="Loading... Please wait"
+    loading-text="Carregando dados..."
   >
   <template v-slot:item.actions="{ item: product }">
       <v-icon
@@ -39,6 +44,7 @@
 <script>
 import ProductService from "../services/ProductService";
 import EditProductModal from '../components/modals/EditProductModal';
+import {Product} from '../models/Produt';
 export default {
   name: "ProductListVue",
 
@@ -71,6 +77,9 @@ export default {
     async editProduct(product){
       this.selectedProduct = {...product};
     },
+    async createProduct(){
+      this.selectedProduct = new Product({});
+    },
     loadProduct(newProduct){
       let productFound = false;
       this.products = this.products.map(product => {
@@ -92,8 +101,19 @@ export default {
   flex-direction: column;
   padding: 15pt;
 }
+.tableActions > *{
+  padding: 4pt;
+  /* display: flex; */
+  /* justify-content: space-between; */
+  /* align-items: center; */
+}
 .queryInput{
-  max-width: 420px;
-  align-self: flex-end;
+  max-width: 320px;
+
+}
+@media only screen and (max-width: 600px) {
+  .queryInput{
+    align-self: flex-end;
+  }
 }
 </style>
