@@ -17,6 +17,7 @@
             label="Cód. de barras"
             placeholder="xxxxxxxxxxxx"
             outlined
+            v-mask="'############'"
             :disabled="sendingData"
           />
           <v-alert
@@ -28,6 +29,16 @@
             v-if="success"
           >
             Produto atualizado com sucesso
+          </v-alert>
+          <v-alert
+            type="error"
+            border="bottom"
+            dense
+            text
+            elevation="5"
+            v-if="fail"
+          >
+            {{ errorMessage }}
           </v-alert>
         </v-card-text>
         <v-card-actions>
@@ -53,13 +64,16 @@
 </template>
 <script>
 import ProductService from "../../services/ProductService";
+import errorMessages from '../../utils/errorMessages';
 export default {
   name: "EditProducModal",
   props: ["product", "afterEdit"],
   data: () => ({
     open: false,
-    success: false,
-    sendingData: false
+    status: null,
+    sendingData: false,
+    errorMessage: "",
+    rules: { number: value => Boolean(Number(value)) || "Digite um número" }
   }),
   created() {
     this.open = Boolean(this.product);
@@ -67,22 +81,31 @@ export default {
   methods: {
     async save() {
       this.sendingData = true;
-      try {
-        if (this.product) {
-          await ProductService.save(this.product);
-          this.success = true;
+      await ProductService.save(this.product)
+        .then(() => {
+          this.status = "success";
           setTimeout(() => {
             this.afterEdit(this.product);
             this.close();
           }, 800);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-      this.sendingData = true;
+        })
+        .catch(err => {
+          this.errorMessage = errorMessages.product[err.response.data.error];
+          this.status = "fail";
+        })
+        .finally(() => (this.sendingData = false));
     },
     close() {
       this.open = false;
+      this.status = null;
+    }
+  },
+  computed: {
+    success() {
+      return this.status === "success";
+    },
+    fail() {
+      return this.status === "fail";
     }
   },
   watch: {
