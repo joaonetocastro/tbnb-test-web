@@ -90,10 +90,10 @@ export default {
       }
       this.sendingData = true;
       await ProductService.save(this.product)
-        .then(() => {
+        .then(newProductData => {
           this.status = "success";
           setTimeout(() => {
-            this.afterEdit(this.product);
+            this.afterEdit(newProductData);
             this.close();
           }, 800);
         })

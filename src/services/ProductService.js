@@ -24,5 +24,10 @@ export default {
       return Promise.reject(response.data.error);
     }
     return Promise.resolve(response.data);
+  },
+  async delete(product) {
+    return await Axios.delete(
+      `${process.env.VUE_APP_API_HOST}/products/${product.id}`
+    );
   }
 };

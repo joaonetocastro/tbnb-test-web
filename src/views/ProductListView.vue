@@ -18,10 +18,9 @@
   <v-data-table
     :headers="headers"
     :items="products"
-    :sort-by="['calories', 'fat']"
-    :sort-desc="[false, true]"
     :search="query"
-    multi-sort
+    :sort-by="['name']"
+    :sort-asc="[true]"
     class="elevation-1"
     loading:="loadingData"
     loading-text="Carregando dados..."
@@ -30,9 +29,23 @@
       <v-icon
         small
         class="mr-2"
+        @click="listTransactions(product)"
+      >
+        mdi-text-box-multiple
+      </v-icon>
+      <v-icon
+        small
+        class="mr-2"
         @click="editProduct(product)"
       >
         mdi-pencil
+      </v-icon>
+      <v-icon
+        small
+        class="mr-2"
+        @click="deleteProduct(product)"
+      >
+        mdi-delete
       </v-icon>
     </template>
   </v-data-table>
@@ -46,7 +59,7 @@ import ProductService from "../services/ProductService";
 import EditProductModal from '../components/modals/EditProductModal';
 import {Product} from '../models/Produt';
 export default {
-  name: "ProductListVue",
+  name: "ProductListView",
 
   components: {EditProductModal},
   created() {
@@ -80,6 +93,17 @@ export default {
     async createProduct(){
       this.selectedProduct = new Product({});
     },
+    async deleteProduct(product){
+      try{
+        await ProductService.delete(product);
+        this.products = this.products.filter((productData) => productData.id !== product.id)
+      }catch(err){
+        console.error(err);
+      }
+    },
+    listTransactions(product){
+      this.$router.push({name:'transactions',params: {product}});
+    },
     loadProduct(newProduct){
       let productFound = false;
       this.products = this.products.map(product => {
@@ -89,6 +113,7 @@ export default {
         }
         return product;
       });
+      console.log(this.products);
       if(!productFound) this.products.push(newProduct);
     }
   }
