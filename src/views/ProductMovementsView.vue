@@ -27,7 +27,7 @@
               <th class="text-left">Data</th>
               <th class="text-left">Quantidade</th>
               <th class="text-left">Tipo</th>
-              <th class="text-left">Ações</th>
+              <!-- <th class="text-left">Ações</th> -->
             </tr>
           </thead>
           <tbody>
@@ -47,7 +47,7 @@
                   {{ item.type === "in" ? "Entrada" : "Saída" }}
                 </v-chip>
               </td>
-              <td>Ações</td>
+              <!-- <td>Ações</td> -->
             </tr>
           </tbody>
         </template>
