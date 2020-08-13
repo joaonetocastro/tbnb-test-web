@@ -66,8 +66,8 @@
               <td>
                 <v-text-field
                   v-model="item.quantityChosen"
-                  v-mask="getQuantityMask(item)"
-                  :rules="[getQuantityRule(item)]"
+                  v-mask="masks.getQuantityMask(item)"
+                  :rules="[rules.getQuantityRule(item, type)]"
                   type="number"
                   class="quantityInput"
                 />
@@ -79,22 +79,22 @@
                 <td>
                   <v-text-field
                     v-model="item.name"
-                    :rules="[getNameRule(item)]"
+                    :rules="[rules.getNameRule(item)]"
                   />
                 </td>
 
                 <td>
                   <v-text-field
                     v-model="item.barcode"
-                    :rules="[getBarcodeRule(item)]"
+                    :rules="[rules.getBarcodeRule(item, products)]"
                     v-mask="'############'"
                   />
                 </td>
                 <td>
                   <v-text-field
                     v-model="item.quantityChosen"
-                    v-mask="getQuantityMask(item)"
-                    :rules="[getQuantityRule(item)]"
+                    v-mask="masks.getQuantityMask(item)"
+                    :rules="[rules.getQuantityRule(item, type)]"
                     type="number"
                     class="quantityInput"
                   />
@@ -129,6 +129,8 @@
 import ProductService from "../services/ProductService";
 import MovementService from "../services/MovementService";
 import normalizeWord from "../utils/normalizeWord";
+import rules from "../utils/rules";
+import masks from "../utils/masks";
 const emptyProduct = {
   chosen: true,
   name: "",
@@ -165,38 +167,13 @@ export default {
       open: false,
       text: "Erro ao criar Entrada/Saída",
       color: "error"
-    }
+    },
+    rules,
+    masks
   }),
   methods: {
     setType(newType) {
       this.type = newType;
-    },
-    getQuantityMask(product) {
-      return Array.from({ length: `${product.quantityChosen}`.length }).map(
-        () => /[0-9]/
-      );
-    },
-    getNameRule(product) {
-      if (product.name !== "") return true;
-      return "Nome inválido!";
-    },
-    getBarcodeRule(product) {
-      if (product.barcode.length !== 12) return "Cód. de barras inválido!";
-      if (this.products.filter(p => p.barcode === product.barcode).length !== 0)
-        return "Cód. de barras inválido!";
-      return true;
-    },
-    getQuantityRule(product) {
-      if (product.quantityChosen === "") return true;
-      if (this.type === "in") return true;
-      if (
-        !isNaN(Number(product.quantityChosen)) &&
-        Number(product.quantityChosen) >= 0 &&
-        Number(product.quantityChosen) <= Number(product.quantity)
-      ) {
-        return true;
-      }
-      return "O produto não tem essa quantidade disponível";
     },
     addProduct() {
       this.newProducts.push({ ...emptyProduct });
@@ -209,12 +186,14 @@ export default {
     async save() {
       const chosenProducts = this.products.filter(product => product.chosen);
       for (const product of chosenProducts) {
-        if (typeof this.getQuantityRule(product) === "string") return;
+        if (typeof rules.getQuantityRule(product, this.type) === "string")
+          return;
       }
       if (this.type === "in") {
         for (const product of this.newProducts) {
-          if (typeof this.getNameRule(product) === "string") return;
-          if (typeof this.getBarcodeRule(product) === "string") return;
+          if (typeof rules.getNameRule(product) === "string") return;
+          if (typeof rules.getBarcodeRule(product, this.products) === "string")
+            return;
         }
       }
       const data = {
