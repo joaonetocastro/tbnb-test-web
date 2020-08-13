@@ -49,7 +49,7 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th class="text-left"></th>
+              <th class="text-left">Selecionado?</th>
               <th class="text-left">Nome</th>
               <th class="text-left">Cód. de Barras</th>
               <th class="text-left">Quantidade</th>
@@ -68,6 +68,9 @@
                   v-model="item.quantityChosen"
                   v-mask="masks.getQuantityMask(item)"
                   :rules="[rules.getQuantityRule(item, type)]"
+                  @input="
+                    item.chosen = item.quantityChosen === '0' ? false : true
+                  "
                   type="number"
                   class="quantityInput"
                 />
