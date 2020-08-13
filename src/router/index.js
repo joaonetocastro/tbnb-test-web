@@ -1,19 +1,25 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import ProductListView from "../views/ProductListView";
-import TransactionListView from "../views/TransactionListView";
+import MovementListView from "../views/MovementListView";
+import ProductMovementsView from "../views/ProductMovementsView";
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/products/transactions",
-    name: "transactions",
-    component: TransactionListView
+    path: "/movements",
+    name: "movements",
+    component: MovementListView
   },
   {
     path: "/products",
     name: "products",
     component: ProductListView
+  },
+  {
+    path: "/products/:id/movements",
+    name: "productMovements",
+    component: ProductMovementsView
   },
   { path: "*", redirect: "/products" }
 ];

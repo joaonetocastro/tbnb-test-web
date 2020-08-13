@@ -3,9 +3,22 @@
   <v-layout column class="root">
     <!-- <v-row> -->
       <div class="tableActions d-flex flex-column flex-sm-row align-sm-center align-start justify-space-between">
-      <v-btn color="blue dark-1" @click="createProduct()">Adicionar produto</v-btn>
+        <div>
+          <v-btn rounded color="green dark-1" @click="addMovement()">
+            Entradas/Saídas
+            </v-btn>
+        </div>
+        <div class="d-flex align-center">
+          <v-btn class="mx-2" text color="blue dark-1" @click="createProduct()">
+          <v-icon
+        class="ma-2"
+      >
+        mdi-plus
+      </v-icon>
+Produto
+          </v-btn>
   <v-text-field
-  class="queryInput"
+  class="queryInput mx-0"
         v-model="query"
         append-icon="search"
         label="Search"
@@ -13,6 +26,7 @@
         hide-details
             solo
       ></v-text-field>
+      </div>
       </div>
     <!-- </v-row> -->
   <v-data-table
@@ -29,7 +43,7 @@
       <v-icon
         small
         class="mr-2"
-        @click="listTransactions(product)"
+        @click="listMovements(product)"
       >
         mdi-text-box-multiple
       </v-icon>
@@ -85,7 +99,7 @@ export default {
       } catch (error) {
         console.log(error);
       }
-      // this.loadingData = false;
+      this.loadingData = false;
     },
     async editProduct(product){
       this.selectedProduct = {...product};
@@ -101,8 +115,11 @@ export default {
         console.error(err);
       }
     },
-    listTransactions(product){
-      this.$router.push({name:'transactions',params: {product}});
+    listMovements(product){
+      this.$router.push({name:'productMovements',params: {id:product.id}});
+    },
+    addMovement(){
+      this.$router.push({name:'movements'});
     },
     loadProduct(newProduct){
       let productFound = false;
