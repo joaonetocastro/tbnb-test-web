@@ -65,6 +65,15 @@ Produto
   </v-data-table>
   </v-layout>
   <edit-product-modal :product="selectedProduct" :afterEdit="loadProduct" />
+  <v-snackbar :color="snackbar.color" v-model="snackbar.open">
+      {{ snackbar.text }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
 </v-container>
 </template>
 
@@ -90,6 +99,11 @@ export default {
     ],
     products: [],
     selectedProduct: null,
+    snackbar: {
+      open: false,
+      text: "Erro ao criar Entrada/Saída",
+      color: "error"
+    }
   }),
   methods: {
     async fetchData() {
@@ -97,7 +111,9 @@ export default {
       try {
         this.products = await ProductService.getAll();
       } catch (error) {
-        console.log(error);
+        this.snackbar.open = true;
+        this.snackbar.text = "Erro ao carregar dados dos produtos";
+        this.snackbar.color = "error";
       }
       this.loadingData = false;
     },
@@ -130,7 +146,6 @@ export default {
         }
         return product;
       });
-      console.log(this.products);
       if(!productFound) this.products.push(newProduct);
     }
   }

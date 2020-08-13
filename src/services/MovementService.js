@@ -1,7 +1,6 @@
 import Axios from "axios";
 export default {
   async getAll(product) {
-    console.log(product);
     const response = await Axios.get(
       `${process.env.VUE_APP_API_HOST}/movements/${product.id}`
     );

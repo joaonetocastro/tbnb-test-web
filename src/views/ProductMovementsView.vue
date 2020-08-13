@@ -53,6 +53,15 @@
         </template>
       </v-simple-table>
     </v-layout>
+    <v-snackbar :color="snackbar.color" v-model="snackbar.open">
+      {{ snackbar.text }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -70,7 +79,9 @@ export default {
         id: this.$route.params.id
       });
     } catch (error) {
-      console.log(error);
+      this.snackbar.open = true;
+      this.snackbar.text = "Erro ao carregar dados";
+      this.snackbar.color = "error";
     }
     this.loadingData = false;
   },
@@ -84,7 +95,12 @@ export default {
       { text: "Ações", value: "actions", sortable: false }
     ],
     selectedMovement: null,
-    movements: []
+    movements: [],
+    snackbar: {
+      open: false,
+      text: "Erro ao criar Entrada/Saída",
+      color: "error"
+    }
   })
 };
 </script>

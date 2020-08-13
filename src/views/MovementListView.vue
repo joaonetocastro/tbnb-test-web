@@ -113,6 +113,15 @@
         >Adicionar novo produto</v-btn
       >
     </v-layout>
+    <v-snackbar :color="snackbar.color" v-model="snackbar.open">
+      {{ snackbar.text }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -139,7 +148,8 @@ export default {
         quantityChosen: "0"
       }));
     } catch (error) {
-      console.log(error);
+      this.snackbar.open = true;
+      this.snackbar.text = "Erro ao carregar dados dos produtos";
     }
     this.loadingData = false;
   },
@@ -150,7 +160,12 @@ export default {
     selectedMovement: null,
     products: [],
     newProducts: [],
-    type: "in"
+    type: "in",
+    snackbar: {
+      open: false,
+      text: "Erro ao criar Entrada/Saída",
+      color: "error"
+    }
   }),
   methods: {
     setType(newType) {
@@ -216,8 +231,16 @@ export default {
               }))
             : []
       };
-      await MovementService.save(data);
-      this.$router.push({ name: "products" });
+      try {
+        await MovementService.save(data);
+        this.snackbar.open = true;
+        this.snackbar.text = "Entrada/saída cadastrada com sucesso";
+        this.snackbar.color = "green lighten-2";
+      } catch {
+        this.snackbar.open = true;
+        this.snackbar.text = "Erro ao salvar entrada/saída";
+        this.snackbar.color = "error";
+      }
     }
   },
   computed: {
